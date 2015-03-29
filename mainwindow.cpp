@@ -6846,12 +6846,8 @@ void UI_Mainwindow::autoScoring()
 		max_epoch = currentEpoch() + hours*3600/epoch_duration;
 		if (max_epoch > epoch_count - 1 ) max_epoch = epoch_count - 1;
 	}
-	// get c
-	double c = 1;
-// 	double c = QInputDialog::getDouble(this, tr("AutoScoring parameters"),
-// 		tr("tag confidence coefficient:"), 1, 0, 20, 1);
- 	scoring.tag_doverit_c = c;
-	int scored = 0, taged = 0;
+ 	scoring.tag_doverit_c = 1;
+	int scored = 0;
 	for(int i = currentEpoch(); i < max_epoch; i++)
 	{
 		if(scoring.expert[i]) continue;
@@ -6864,7 +6860,7 @@ void UI_Mainwindow::autoScoring()
 		{
 			if(scoring.wakeByMotion(stat)) 
 			{
-				scoring.scoring[i] = stage;		
+				scoring.scoring[i] = s_Wake;		
 				scored++;
 				continue;
 			} else { continue; }
@@ -6875,19 +6871,7 @@ void UI_Mainwindow::autoScoring()
 			scoring.scoring[i] = stage;		
 			scored++;
 		}
-		/*if(scoring.classifyTag(stat, tag))
-		{
-			scoring.switchTag(i, tag.name, true);
-			taged++;
-		}
-*/
-		//strcpy(maincurve->current_annotation->annotation, scoring.epochName(currentEpoch()).c_str());
 	}
-// 	QMessageBox msgBox;
-// 	stringstream ss;
-// 	ss << "scored: " << scored << " tagged: " << taged;
-// 	msgBox.setText(ss.str().c_str());
-// 	msgBox.exec();
 	save_scoring();
 	load_scoring();
 	jump_epoch(currEpoch);
@@ -7578,8 +7562,6 @@ void UI_Mainwindow::score_nrem()
 void UI_Mainwindow::score_out()
 {
 	scoring.outliers[currentEpoch()] = true;
-	save_scoring();
-	load_scoring();
 }
 
 void UI_Mainwindow::score_na()
@@ -7622,7 +7604,6 @@ void UI_Mainwindow::score_question() // 2 die
 	strcpy(maincurve->current_annotation->annotation, buf);
 	setup_viewbuf();
 	if(!noPageShift) shift_page_one_epoch();
-
 }
 
 void UI_Mainwindow::score_tag_pw()
@@ -7640,7 +7621,7 @@ void UI_Mainwindow::refresh_scoring_array()
 {
 	int duration = (edfheaderlist[0]->datarecords * edfheaderlist[0]->long_data_record_duration)/TIME_DIMENSION;
 	int epoch_count_new = ceil((double)duration/epoch_duration);
-	if(epoch_count_new == epoch_count) { return; } else { epoch_count = epoch_count_new; }
+	epoch_count = epoch_count_new;
 	scoring.epoch_count = epoch_count;
 	scoring.populateVoidScoring();
 }
@@ -7655,7 +7636,19 @@ void UI_Mainwindow::score_by_motion()
 		msgBox.exec();
 		return;
 	}
-	
+	// collect expert scoring motion statistics
+	int currEpoch = currentEpoch();
+	for(int i = 0; i < epoch_count - 1 ; i++) //
+	{
+		if(scoring.expert[i] && (scoring.scoring[i] == s_REM || scoring.scoring[i] == s_SW || scoring.scoring[i] == s_Wake))
+		{
+			jump_epoch(i);
+			QApplication::processEvents();
+			add_current_epoch_stat(static_cast<TStage>(scoring.scoring[i]));
+			QApplication::processEvents();
+		}
+	}
+
 	int hours = 1;
 	bool ok;
 	hours = QInputDialog::getInt(this, tr("Scoring by motion"),
@@ -7909,8 +7902,8 @@ void UI_Mainwindow::delete_scoring()
 	char fname[1024], sfname[1024];
 	sprintf(sfname, "%s.slp", edfheaderlist[0]->filename);
 	FILE *sf; 
-	sf = fopen(fname, "w"); fclose(sf);
-
+	sf = fopen(fname, "w"); 
+	fclose(sf);
 }
 
 void UI_Mainwindow::select_motion_signal()
@@ -8542,7 +8535,6 @@ void UI_Mainwindow::experize_epochs()
 	myScatter.setShape(QCPScatterStyle::ssCross);
 	myScatter.setPen(QPen(Qt::black));
 	myScatter.setSize(1);
-	
 
 	QCustomPlot* customPlot = new QCustomPlot;
 	//customPlot.setWindowModality(Qt::WindowModal);
@@ -8580,7 +8572,6 @@ void UI_Mainwindow::experize_epochs()
 		customPlot->graph(graphId)->rescaleAxes(true, true);
 		graphId++;
 	}
-
 	if(is_pw)
 	{
 		customPlot->addGraph();
@@ -8589,13 +8580,10 @@ void UI_Mainwindow::experize_epochs()
 		customPlot->graph(graphId)->rescaleAxes(true, true);
 		graphId++;
 	}
-	
 	customPlot->xAxis->setLabel("frequency");
 	customPlot->yAxis->setLabel("amplitude");
 	customPlot->xAxis->setRange(0, spectrum_max_freq);
-	
 	customPlot->setInteractions(QCP::iRangeDrag | QCP::iRangeZoom | QCP::iSelectPlottables);
-
 
 	QDialog* qu = new QDialog;
 	QVBoxLayout* layout = new QVBoxLayout;

@@ -2,10 +2,15 @@ CleverScoring::CleverScoring()
 init
 loadScoring
 ..opened
+populateVoidScoring
+epoch count: 7423
+memory allocated
+annotation loaded
 load pw scoring
 ..opened
 init
+init
 populateVoidScoring
-epoch count: 5446
+epoch count: 6893
 init
 CleverScoring::~CleverScoring()

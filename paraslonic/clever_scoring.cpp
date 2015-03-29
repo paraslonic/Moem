@@ -7,7 +7,7 @@
 #include <cmath>
 int STag::max_id = -1;
 
-const char* log_file_name = "c:\clever_scoring_log.txt";
+const char* log_file_name = "clever_scoring_log.txt";
 
 CleverScoring::CleverScoring(UI_Mainwindow* window)
 {
