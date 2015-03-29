@@ -1,0 +1,11 @@
+CleverScoring::CleverScoring()
+init
+loadScoring
+..opened
+load pw scoring
+..opened
+init
+populateVoidScoring
+epoch count: 5446
+init
+CleverScoring::~CleverScoring()
