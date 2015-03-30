@@ -7638,17 +7638,25 @@ void UI_Mainwindow::score_by_motion()
 	}
 	// collect expert scoring motion statistics
 	int currEpoch = currentEpoch();
+	vector<float> sleep_mrs;
 	for(int i = 0; i < epoch_count - 1 ; i++) //
 	{
-		if(scoring.expert[i] && (scoring.scoring[i] == s_REM || scoring.scoring[i] == s_SW || scoring.scoring[i] == s_Wake))
+		if(scoring.expert[i] && (scoring.scoring[i] == s_REM || scoring.scoring[i] == s_SW))
 		{
 			jump_epoch(i);
 			QApplication::processEvents();
-			add_current_epoch_stat(static_cast<TStage>(scoring.scoring[i]));
+			sleep_mrs.push_back(motion_mrs());
 			QApplication::processEvents();
 		}
 	}
-
+	jump_epoch(currEpoch);
+	
+	// calc threshold
+	sort(sleep_mrs.begin(), sleep_mrs.end());
+	int sleep_mrs_size = sleep_mrs.size();
+	float sleepMrsThreshold = motion_mrs();
+	if(sleep_mrs_size > 0) sleepMrsThreshold = sleep_mrs[(int)(sleep_mrs_size*0.9)];
+	
 	int hours = 1;
 	bool ok;
 	hours = QInputDialog::getInt(this, tr("Scoring by motion"),
@@ -7658,12 +7666,20 @@ void UI_Mainwindow::score_by_motion()
 
 	// sum_wake_mot_mrs/sum_wake_mot_n
 	ok = false;
-	double thresh = 1; 
+	double thresh = sleepMrsThreshold; 
 	thresh = QInputDialog::getDouble(this, tr("QInputDialog::getDouble()"),
-		tr("Threshold:"), thresh, -10000, 10000, 2, &ok);
+		tr("Threshold:"), thresh, -10000, 10000, 4, &ok);
 	if (!ok)
 		thresh = motion_wake_threshold;
 	
+	// write current threshold 2 file
+	char fname[1024];
+	sprintf(fname, "%s.motion_scoring.txt", edfheaderlist[0]->filename);
+	FILE* file = fopen(fname, "w");
+	fprintf(file, "%f\n", (float)thresh);
+	fclose(file);
+	
+	// go
 	for(int i = currentEpoch(); i < max_epoch; i++)
 	{
 		float s = signalcomp[motion_signal]->stat_sum;
