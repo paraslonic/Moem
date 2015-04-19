@@ -12,6 +12,7 @@ const char* log_file_name = "clever_scoring_log.txt";
 CleverScoring::CleverScoring(UI_Mainwindow* window)
 {
 	rem_doverit_c = 0.5; w_doverit_c = 0.2; sw_doverit_c = 0.8; // one std dev is ok
+	motion_sleep_threshold = 0;
 	tag_doverit_c = 1;
 	epoch_count = 0;
 	scoring = NULL;
@@ -35,6 +36,7 @@ CleverScoring::~CleverScoring()
 
 void CleverScoring::init(UI_Mainwindow* window)
 {
+	log("init start");
 	this->window = window;
 	if(scoring != NULL) { delete[] scoring; scoring = NULL; }
 	if(expert != NULL) { delete[] expert; expert = NULL; }
@@ -55,7 +57,7 @@ void CleverScoring::init(UI_Mainwindow* window)
 
 	vPW.clear();
 
-	log("init");
+	log("init complete");
 }
 
 void CleverScoring::populateVoidScoring()
@@ -69,6 +71,14 @@ void CleverScoring::populateVoidScoring()
 	outliers = new bool[epoch_count]; 
 	epochsTags.resize(epoch_count);
 	for(int i = 0; i< epoch_count; i++)  { scoring[i] = s_NA; expert[i] = false; outliers[i] = false; }
+}
+
+void CleverScoring::clearStats()
+{
+	epoch_stat_SW.clear();
+	epoch_stat_REM.clear();
+	epoch_stat_W.clear();
+	epoch_stat_PW.clear();
 }
 
 void CleverScoring::loadScoring(char* filename)
@@ -358,7 +368,7 @@ void CleverScoring::digestTags()
 
 bool CleverScoring::wakeByMotion(epoch_stat& stat)
 {
-	if(stat.motion && stat.motion_mrs > max(max_mot_sw, max_mot_rem)) 
+	if(stat.motion && stat.motion_mrs > motion_sleep_threshold) 
 	{
 		//log("wake by motion: ", (int)current.motion_mrs);
 		return true;
@@ -456,43 +466,26 @@ bool CleverScoring::classifyTag(epoch_stat& stat, STag& tag)
 	return classified;
 }
 
+void addMotion(vector<epoch_stat> stats, vector<double>& motions){
+	 for(int i = 0; i < stats.size(); i++) motions.push_back(stats[i].motion_mrs);
+}
+
 void CleverScoring::calculate_motion_levels()
 {
 	// calculate motion levels
-	vector <double> motion_rem, motion_sw, motion_w;
-	int n = 0; double mot =0; 
-	// REM
-	for(int i = 0; i < epoch_stat_REM.size(); i++)
-		if(epoch_stat_REM[i].motion) 
-		{
-			mot = epoch_stat_REM[i].motion_mrs;
-			mean_mot_rem += mot;
-			if(mot > max_mot_rem) max_mot_rem = mot;
-			n++; 
-		}
-	if(n > 0) mean_mot_rem = mean_mot_rem / n;
-	// SW
-	n = 0; mot =0; 
-	for(int i = 0; i < epoch_stat_SW.size(); i++)
-		if(epoch_stat_SW[i].motion) 
-		{
-			mot = epoch_stat_SW[i].motion_mrs;
-			mean_mot_sw += mot;
-			if(mot > max_mot_sw) max_mot_sw = mot;
-			n++; 
-		}
-	if(n > 0) mean_mot_sw = mean_mot_sw / n;
-	// W
-	n = 0; mot =0; 
-	for(int i = 0; i < epoch_stat_W.size(); i++)
-		if(epoch_stat_W[i].motion) 
-		{
-			mot = epoch_stat_W[i].motion_mrs;
-			mean_mot_w += mot;
-			if(mot > max_mot_w) max_mot_w = mot;
-			n++; 
-		}
-	if(n > 0) mean_mot_w = mean_mot_w/ n;
+	vector <double> motionSleep;
+	addMotion(epoch_stat_REM, motionSleep);
+	addMotion(epoch_stat_SW, motionSleep);
+	sort(motionSleep.begin(), motionSleep.end());
+	int count = (int)motionSleep.size();
+	motion_sleep_threshold = motionSleep[(int)(count*0.95)];
+
+	// write current threshold 2 file
+	char fname[1024];
+	sprintf(fname, "%s.motion_scoring.txt", window->edfheaderlist[0]->filename);
+	FILE* file = fopen(fname, "w");
+	fprintf(file, "%f\n", (float)motion_sleep_threshold);
+	fclose(file);
 }
 
 void CleverScoring::calculate_median_spectrums()
@@ -584,8 +577,7 @@ void CleverScoring::calculate_median_tagSpectrums()
 		}
 		for(int i  = 0; i < bins; i++) 
 		{
-			sort(spectrums[i].begin(), spectrums[i].end());
-			tagStats[(*tagit)].mspectrum[i] = spectrums[i][epochs/2];
+			 
 			tagStats[(*tagit)].mspectrum_20[i] = spectrums[i][epochs/5];
 			tagStats[(*tagit)].mspectrum_80[i] = spectrums[i][(epochs*4)/5];
 		}

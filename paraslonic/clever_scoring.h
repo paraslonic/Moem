@@ -67,6 +67,7 @@ public:
 	~CleverScoring();
 	void init(UI_Mainwindow* window);
 	void populateVoidScoring();
+	void clearStats();
 	// load/save
 	void loadScoring(char* filename);
 	void loadPWScoring(char* filename);
@@ -119,7 +120,7 @@ public: // statistics
 	vector<double> mspectrum_rem_10, mspectrum_sw_10, mspectrum_w_10; // 10 percentile
 	vector<double> mspectrum_rem_90, mspectrum_sw_90, mspectrum_w_90; // 90 percentile
 	double mean_mot_rem, mean_mot_sw, mean_mot_w, mean_mot_pw; 
-	double max_mot_rem, max_mot_sw, max_mot_w, max_mot_pw; 
+	double max_mot_rem, max_mot_sw, max_mot_w, max_mot_pw, motion_sleep_threshold; 
 public: // tags
 	vector<STag> tags;
 	vector< vector<STag> > epochsTags; // need 2 populate

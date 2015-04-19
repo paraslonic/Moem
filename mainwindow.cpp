@@ -6848,6 +6848,7 @@ void UI_Mainwindow::autoScoring()
 	}
  	scoring.tag_doverit_c = 1;
 	int scored = 0;
+	// begin scoring
 	for(int i = currentEpoch(); i < max_epoch; i++)
 	{
 		if(scoring.expert[i]) continue;
@@ -6866,6 +6867,12 @@ void UI_Mainwindow::autoScoring()
 			} else { continue; }
 		}
 		// norm
+		if(scoring.wakeByMotion(stat)) 
+		{
+			scoring.scoring[i] = s_Wake;		
+			scored++;
+			continue;
+		} 
 		if(scoring.classifyHist(stat, stage, i))
 		{
 			scoring.scoring[i] = stage;		
@@ -7806,7 +7813,6 @@ void UI_Mainwindow::save_spectrum()
 void UI_Mainwindow::autoScoreOutliers()
 {
 	if(epoch_count == 0) { return; }
-	FILE* logfile = fopen("max_signel_value", "w");
 	
 	int current = currentEpoch();
 	jump_epoch(0);
@@ -7822,8 +7828,7 @@ void UI_Mainwindow::autoScoreOutliers()
 	for(int i = 0; i < epoch_count; i++)
 	{
 		//MRS[i] = signal_mrs(signal);
-		MRS[i] = log(signalcomp[signal]->stat_max_value);
-		fprintf(logfile, "%f\t%f\n", signal_mrs(signal), signalcomp[signal]->stat_max_value);
+		MRS[i] = log(signalcomp[signal]->stat_max_value+0.000000001);
 		next_page();
 		QApplication::processEvents();
 	}	
@@ -7844,8 +7849,6 @@ void UI_Mainwindow::autoScoreOutliers()
 	save_scoring();
 	load_scoring();
 	jump_epoch(current);
-	fprintf(logfile, "out value: %f\n", max_val);
-	fclose(logfile);
 }
 
 int UI_Mainwindow::currentEpoch()
@@ -8479,7 +8482,7 @@ void UI_Mainwindow::experize_epochs()
 {
 	// look all annotated epochs 2 educate classifier
 	//if(expertMode) change_expert_mode();
-	
+	scoring.log("experize_epochs");
 	if(!spectrumdock || !spectrumdock->dock->isVisible()) 
 	{
 		QMessageBox msgBox;
@@ -8487,7 +8490,7 @@ void UI_Mainwindow::experize_epochs()
 		msgBox.exec();
 		return;
 	}
-
+	scoring.clearStats();
 	for(int i = 0; i < epoch_count - 1 ; i++) //
 	{
 		if(scoring.expert[i] && (scoring.scoring[i] == s_REM || scoring.scoring[i] == s_SW || scoring.scoring[i] == s_Wake))

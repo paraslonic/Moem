@@ -1,7 +1,7 @@
 /****************************************************************************
 ** Meta object code from reading C++ file 'averager_curve_wnd.h'
 **
-** Created: Mon 23. Feb 20:39:13 2015
+** Created: Sun 19. Apr 20:28:02 2015
 **      by: The Qt Meta Object Compiler version 63 (Qt 4.8.4)
 **
 ** WARNING! All changes made in this file will be lost!

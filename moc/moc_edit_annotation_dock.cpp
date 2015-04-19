@@ -1,7 +1,7 @@
 /****************************************************************************
 ** Meta object code from reading C++ file 'edit_annotation_dock.h'
 **
-** Created: Mon 23. Feb 20:38:51 2015
+** Created: Sun 19. Apr 20:27:39 2015
 **      by: The Qt Meta Object Compiler version 63 (Qt 4.8.4)
 **
 ** WARNING! All changes made in this file will be lost!

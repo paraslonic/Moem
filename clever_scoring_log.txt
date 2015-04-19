@@ -1,5 +1,6 @@
 CleverScoring::CleverScoring()
-init
+init start
+init complete
 loadScoring
 ..opened
 populateVoidScoring
@@ -8,5 +9,250 @@ memory allocated
 annotation loaded
 load pw scoring
 ..opened
-init
+experize_epochs
+experize_epochs
+digest
+calculate_median_spectrums
+bins: 40
+digest_tags
+tags: 1
+calculate_median_tagSpectrums
+expert dists:
+save txt
+experize_epochs
+digest
+calculate_median_spectrums
+bins: 40
+digest_tags
+tags: 1
+calculate_median_tagSpectrums
+expert dists:
+save txt
+classify with history
+classify with history
+classify with history
+classify with history
+classify with history
+classify with history
+classify with history
+classify with history
+classify with history
+classify with history
+classify with history
+classify with history
+classify with history
+classify with history
+classify with history
+classify with history
+classify with history
+classify with history
+classify with history
+classify with history
+classify with history
+classify with history
+classify with history
+classify with history
+classify with history
+classify with history
+classify with history
+classify with history
+classify with history
+classify with history
+classify with history
+classify with history
+classify with history
+classify with history
+classify with history
+classify with history
+classify with history
+classify with history
+classify with history
+classify with history
+classify with history
+classify with history
+classify with history
+classify with history
+classify with history
+classify with history
+classify with history
+classify with history
+classify with history
+classify with history
+classify with history
+classify with history
+classify with history
+classify with history
+classify with history
+classify with history
+classify with history
+classify with history
+classify with history
+classify with history
+classify with history
+classify with history
+classify with history
+classify with history
+classify with history
+classify with history
+classify with history
+classify with history
+classify with history
+classify with history
+classify with history
+classify with history
+classify with history
+classify with history
+classify with history
+classify with history
+classify with history
+classify with history
+classify with history
+classify with history
+classify with history
+classify with history
+classify with history
+classify with history
+classify with history
+classify with history
+classify with history
+classify with history
+classify with history
+classify with history
+classify with history
+classify with history
+classify with history
+classify with history
+classify with history
+classify with history
+classify with history
+classify with history
+classify with history
+classify with history
+classify with history
+classify with history
+classify with history
+classify with history
+classify with history
+classify with history
+classify with history
+classify with history
+classify with history
+classify with history
+classify with history
+classify with history
+classify with history
+classify with history
+classify with history
+classify with history
+classify with history
+classify with history
+classify with history
+classify with history
+classify with history
+classify with history
+classify with history
+classify with history
+classify with history
+classify with history
+classify with history
+classify with history
+classify with history
+classify with history
+classify with history
+classify with history
+classify with history
+classify with history
+classify with history
+classify with history
+classify with history
+classify with history
+classify with history
+classify with history
+classify with history
+classify with history
+classify with history
+classify with history
+classify with history
+classify with history
+classify with history
+classify with history
+classify with history
+classify with history
+classify with history
+classify with history
+classify with history
+classify with history
+classify with history
+classify with history
+classify with history
+classify with history
+classify with history
+classify with history
+classify with history
+classify with history
+classify with history
+classify with history
+classify with history
+classify with history
+classify with history
+classify with history
+classify with history
+classify with history
+classify with history
+classify with history
+classify with history
+classify with history
+classify with history
+classify with history
+classify with history
+classify with history
+classify with history
+classify with history
+classify with history
+classify with history
+classify with history
+classify with history
+classify with history
+classify with history
+classify with history
+classify with history
+classify with history
+classify with history
+classify with history
+classify with history
+classify with history
+classify with history
+classify with history
+classify with history
+classify with history
+classify with history
+classify with history
+classify with history
+classify with history
+classify with history
+classify with history
+classify with history
+classify with history
+classify with history
+classify with history
+classify with history
+classify with history
+classify with history
+classify with history
+classify with history
+classify with history
+classify with history
+classify with history
+init start
+init complete
+loadScoring
+..opened
+populateVoidScoring
+epoch count: 4825
+memory allocated
+annotation loaded
+load pw scoring
+..opened
+init start
+init complete
 CleverScoring::~CleverScoring()
